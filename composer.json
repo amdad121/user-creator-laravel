@@ -34,8 +34,7 @@
     },
     "autoload": {
         "psr-4": {
-            "AmdadulHaq\\UserCreator\\": "src/",
-            "AmdadulHaq\\UserCreator\\Database\\Factories\\": "database/factories/"
+            "AmdadulHaq\\UserCreator\\": "src/"
         }
     },
     "autoload-dev": {
