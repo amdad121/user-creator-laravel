@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace AmdadulHaq\UserCreator;
 
 use AmdadulHaq\UserCreator\Commands\UserCreatorCommand;
