@@ -1,9 +1,9 @@
 # Command line user creator for Laravel
 
-[![Latest Version on Packagist](https://img.shields.io/packagist/v/amdad121/user-creator-laravel.svg?style=flat-square)](https://packagist.org/packages/amdad121/user-creator-laravel)
+[![Latest Version on Packagist](https://img.shields.io/packagist/v/amdadulhaq/user-creator-laravel.svg?style=flat-square)](https://packagist.org/packages/amdadulhaq/user-creator-laravel)
 [![GitHub Tests Action Status](https://img.shields.io/github/actions/workflow/status/amdad121/user-creator-laravel/run-tests.yml?branch=main&label=tests&style=flat-square)](https://github.com/amdad121/user-creator-laravel/actions?query=workflow%3Arun-tests+branch%3Amain)
 [![GitHub Code Style Action Status](https://img.shields.io/github/actions/workflow/status/amdad121/user-creator-laravel/fix-php-code-style-issues.yml?branch=main&label=code%20style&style=flat-square)](https://github.com/amdad121/user-creator-laravel/actions?query=workflow%3A"Fix+PHP+code+style+issues"+branch%3Amain)
-[![Total Downloads](https://img.shields.io/packagist/dt/amdad121/user-creator-laravel.svg?style=flat-square)](https://packagist.org/packages/amdad121/user-creator-laravel)
+[![Total Downloads](https://img.shields.io/packagist/dt/amdadulhaq/user-creator-laravel.svg?style=flat-square)](https://packagist.org/packages/amdadulhaq/user-creator-laravel)
 
 This is simple commandline user creator for Laravel.
 
@@ -12,7 +12,7 @@ This is simple commandline user creator for Laravel.
 You can install the package via composer:
 
 ```bash
-composer require amdad121/user-creator-laravel --dev
+composer require amdadulhaq/user-creator-laravel --dev
 ```
 
 ## Usage
