@@ -4,14 +4,18 @@ declare(strict_types=1);
 
 namespace AmdadulHaq\UserCreator\Commands;
 
-use App\Models\User;
 use Illuminate\Console\Command;
 use Illuminate\Contracts\Console\PromptsForMissingInput;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Validator;
+use Illuminate\Validation\ValidationException;
 
 class UserCreatorCommand extends Command implements PromptsForMissingInput
 {
-    public $signature = 'user:create {name} {email} {password}';
+    public $signature = 'user:create
+        {name : The name of the user}
+        {email : The email address of the user}
+        {password? : The password (will be prompted if not provided)}';
 
     public $description = 'Create a new user';
 
@@ -21,27 +25,70 @@ class UserCreatorCommand extends Command implements PromptsForMissingInput
         $email = $this->argument('email');
         $password = $this->argument('password');
 
-        // Check if user with the provided email already exists
-        $existingUser = User::where('email', $email)->first(); /*@phpstan-ignore-line */
-        if ($existingUser) {
-            $this->error('User with this email already exists.');
-            $this->newLine();
+        if (! $password) {
+            $password = $this->secret('Enter password');
+        }
+
+        try {
+            $this->validate($name, $email, $password);
+        } catch (ValidationException $e) {
+            foreach ($e->errors() as $field => $messages) {
+                foreach ($messages as $message) {
+                    $this->error($message);
+                }
+            }
 
             return self::INVALID;
         }
 
-        // Create a new user
-        $user = new User(); /*@phpstan-ignore-line */
-        $user->name = $name; /*@phpstan-ignore-line */
-        $user->email = $email; /*@phpstan-ignore-line */
-        $user->password = Hash::make($password); /*@phpstan-ignore-line */
-        // Add any additional fields as needed
+        $userModel = config('user-creator.user_model');
 
-        $user->save(); /*@phpstan-ignore-line */
+        if (! class_exists($userModel)) {
+            $this->error("User model class {$userModel} does not exist.");
+
+            return self::INVALID;
+        }
+
+        $existingUser = $userModel::where('email', $email)->first();
+        if ($existingUser) {
+            $this->error('User with this email already exists.');
+
+            return self::INVALID;
+        }
+
+        $user = new $userModel;
+        $user->name = $name;
+        $user->email = $email;
+        $user->password = Hash::make($password);
+        $user->save();
 
         $this->info('User created successfully.');
-        $this->newLine();
 
         return self::SUCCESS;
+    }
+
+    protected function validate(string $name, string $email, string $password): void
+    {
+        $validator = Validator::make([
+            'name' => $name,
+            'email' => $email,
+            'password' => $password,
+        ], [
+            'name' => 'required|string|max:255',
+            'email' => 'required|email|max:255',
+            'password' => 'required|string|min:8',
+        ]);
+
+        if ($validator->fails()) {
+            throw new ValidationException($validator);
+        }
+    }
+
+    protected function promptForMissingArgumentsUsing(): array
+    {
+        return [
+            'name' => 'What should the user be named?',
+            'email' => 'What is the user\'s email address?',
+        ];
     }
 }
