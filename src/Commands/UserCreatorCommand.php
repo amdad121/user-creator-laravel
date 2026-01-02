@@ -31,8 +31,8 @@ class UserCreatorCommand extends Command implements PromptsForMissingInput
 
         try {
             $this->validate($name, $email, $password);
-        } catch (ValidationException $e) {
-            foreach ($e->errors() as $field => $messages) {
+        } catch (ValidationException $validationException) {
+            foreach ($validationException->errors() as $messages) {
                 foreach ($messages as $message) {
                     $this->error($message);
                 }
@@ -44,7 +44,7 @@ class UserCreatorCommand extends Command implements PromptsForMissingInput
         $userModel = config('user-creator.user_model');
 
         if (! class_exists($userModel)) {
-            $this->error("User model class {$userModel} does not exist.");
+            $this->error(sprintf('User model class %s does not exist.', $userModel));
 
             return self::INVALID;
         }
@@ -74,21 +74,19 @@ class UserCreatorCommand extends Command implements PromptsForMissingInput
             'email' => $email,
             'password' => $password,
         ], [
-            'name' => 'required|string|max:255',
-            'email' => 'required|email|max:255',
-            'password' => 'required|string|min:8',
+            'name' => ['required', 'string', 'max:255'],
+            'email' => ['required', 'email', 'max:255'],
+            'password' => ['required', 'string', 'min:8'],
         ]);
 
-        if ($validator->fails()) {
-            throw new ValidationException($validator);
-        }
+        throw_if($validator->fails(), ValidationException::class, $validator);
     }
 
     protected function promptForMissingArgumentsUsing(): array
     {
         return [
             'name' => 'What should the user be named?',
-            'email' => 'What is the user\'s email address?',
+            'email' => "What is the user's email address?",
         ];
     }
 }

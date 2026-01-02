@@ -2,11 +2,13 @@
 
 declare(strict_types=1);
 
-use Illuminate\Foundation\Auth\User as Authenticatable;
+namespace AmdadulHaq\UserCreator\Tests;
+
+use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Schema;
 
-beforeEach(function () {
-    Schema::create('users', function ($table) {
+beforeEach(function (): void {
+    Schema::create('users', function ($table): void {
         $table->id();
         $table->string('name');
         $table->string('email')->unique();
@@ -17,7 +19,7 @@ beforeEach(function () {
     config()->set('user-creator.user_model', TestUser::class);
 });
 
-it('can create a user successfully', function () {
+it('can create a user successfully', function (): void {
     $this->artisan('user:create', [
         'name' => 'Test User',
         'email' => 'test@example.com',
@@ -29,7 +31,7 @@ it('can create a user successfully', function () {
     expect(TestUser::where('email', 'test@example.com')->exists())->toBeTrue();
 });
 
-it('fails when user with email already exists', function () {
+it('fails when user with email already exists', function (): void {
     TestUser::create([
         'name' => 'Existing User',
         'email' => 'test@example.com',
@@ -45,7 +47,7 @@ it('fails when user with email already exists', function () {
         ->expectsOutput('User with this email already exists.');
 });
 
-it('validates name is required', function () {
+it('validates name is required', function (): void {
     $this->artisan('user:create', [
         'name' => '',
         'email' => 'test@example.com',
@@ -55,7 +57,7 @@ it('validates name is required', function () {
         ->expectsOutput('The name field is required.');
 });
 
-it('validates email format', function () {
+it('validates email format', function (): void {
     $this->artisan('user:create', [
         'name' => 'Test User',
         'email' => 'invalid-email',
@@ -65,7 +67,7 @@ it('validates email format', function () {
         ->expectsOutput('The email field must be a valid email address.');
 });
 
-it('validates password minimum length', function () {
+it('validates password minimum length', function (): void {
     $this->artisan('user:create', [
         'name' => 'Test User',
         'email' => 'test@example.com',
@@ -75,7 +77,7 @@ it('validates password minimum length', function () {
         ->expectsOutput('The password field must be at least 8 characters.');
 });
 
-it('creates user with hashed password', function () {
+it('creates user with hashed password', function (): void {
     $this->artisan('user:create', [
         'name' => 'Test User',
         'email' => 'test@example.com',
@@ -85,12 +87,5 @@ it('creates user with hashed password', function () {
 
     $user = TestUser::where('email', 'test@example.com')->first();
     expect($user)->not->toBeNull()
-        ->and(\Illuminate\Support\Facades\Hash::check('password123', $user->password))->toBeTrue();
+        ->and(Hash::check('password123', $user->password))->toBeTrue();
 });
-
-class TestUser extends Authenticatable
-{
-    protected $table = 'users';
-
-    protected $fillable = ['name', 'email', 'password'];
-}
