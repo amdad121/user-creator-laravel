@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace AmdadulHaq\UserCreator\Tests;
 
 use AmdadulHaq\UserCreator\UserCreatorServiceProvider;
+use Illuminate\Contracts\Config\Repository;
 use Orchestra\Testbench\TestCase as Orchestra;
 
 class TestCase extends Orchestra
@@ -16,10 +17,10 @@ class TestCase extends Orchestra
         ];
     }
 
-    public function getEnvironmentSetUp($app)
+    protected function getEnvironmentSetUp($app)
     {
-        $app['config']->set('database.default', 'testing');
-        $app['config']->set('database.connections.testing', [
+        $app->make(Repository::class)->set('database.default', 'testing');
+        $app->make(Repository::class)->set('database.connections.testing', [
             'driver' => 'sqlite',
             'database' => ':memory:',
             'prefix' => '',
